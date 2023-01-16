@@ -20,19 +20,11 @@ use utubeget::filter::filter;
 
 
 fn main() -> Result<(), Box<dyn Error>> {
+    // NOTE works
     //let book_urls = read_urls().unwrap();
-    //dbg!(&book_urls);
-
-//    let output = Command::new("/usr/bin/youtube-dl")
-//        .arg("-e")
-//        .arg("https://www.youtube.com/watch?v=kGOMFlkv2pE")
-//        .output()
-//        .unwrap();
-//    let txt = String::from_utf8(output.stdout).unwrap();
-//    println!("{}", &txt);
 
     let test_link: String = String::from("https://www.youtube.com/watch?v=kGOMFlkv2pE");
-    let test_name: String = String::from("❗ЛЮДИ КРИЧАТЬ ПІД ЗАВАЛАМИ! Шокуючі кадри з місця прильоту російської ракети у Дніпрі#дніпро #shorts");
+    let test_name: String = String::from("❗ЛЮДИ test TEST КРИЧАТЬ ПІД ЗАВАЛАМИ! Шокуючі кадри з місця прильоту російської ракети у Дніпрі#дніпро #shorts");
 
     //let test = get_book_name(test_link);
     //println!("{}", test);
