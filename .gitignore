@@ -1,4 +1,7 @@
 /target
+/.vscode
+*.code-workspace
+urls.txt
 *.d
 
 # Compiled Object files

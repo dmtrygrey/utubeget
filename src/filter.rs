@@ -71,7 +71,7 @@ static CYRILIC_TO_LATIN: phf::Map<&'static str, &'static str> = phf_map! {
     "ї" => "i",
 };
 
-pub fn filter( input: String ) -> String {
+pub fn filter( input: &String ) -> String {
     let mut result: String = String::new();
     for ch in input.chars() {
         let mut b = [0; 4];
