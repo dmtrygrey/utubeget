@@ -30,7 +30,11 @@ fn main() -> Result<(), Box<dyn Error>> {
                 println!("Created directory: {}", bookdir);
             },
             Err(error) => match error.kind() {
-                std::io::ErrorKind::AlreadyExists => println!("Directory {} Already Exists!", &bookdir),
+                std::io::ErrorKind::AlreadyExists => {
+                    println!("Directory {} Already Exists!", &bookdir);
+                    println!("download link: {}", &url);
+                    fetch_audio(&url);
+                },
                 _ => println!("Error during directory creation: {}", &bookdir),
             },
         }

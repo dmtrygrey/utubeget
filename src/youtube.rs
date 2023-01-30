@@ -5,17 +5,19 @@ pub fn get_book_name(link: &str) -> String {
     output 
 }
 
-pub fn fetch_audio( link: &str ) {
-    let youtube_call = Command::new("/usr/bin/youtube-dl")
+pub fn fetch_audio( link: &str ) -> Result<String, String> {
+    let mut thread = Command::new("/usr/bin/youtube-dl")
         .arg("-f")
-        .arg("bestaudio[ext=mp3]")
+        .arg("bestaudio[ext=m4a]")
         .arg(link)
-        .output()
-        .expect(&format!("Error: couldn't download {}", &link));
+        .spawn()
+        .expect("Error: couldn't create youtube-dl thread");
 
-    match youtube_call.status.success() {
-        true => println!("Download successful?"),
-        false => println!("Some error {:?}", &youtube_call.status),
+    let status = thread.wait().unwrap();
+
+    match status.success() {
+        true => Ok("Success".to_string()),
+        false => return Err(format!("Youtube-dl error: {:?}", status)),
     }
 }
 
