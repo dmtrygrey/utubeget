@@ -1,9 +1,17 @@
 use std::process::Command;
 
+#[non_exhaustive]
+pub enum DownloadError {
+    ConnectionError,
+    SomeOtherError,
+}
+
 pub fn get_book_name(link: &str) -> String {
     let output: String = fetch_vid_name(link);
     output 
 }
+
+// TODO loop until you get video name or video file
 
 /// Downloads audio from youtube
 pub fn fetch_audio( link: &str ) -> Result<String, String> {
@@ -23,7 +31,7 @@ pub fn fetch_audio( link: &str ) -> Result<String, String> {
 }
 
 /// Downloads video name from youtube
-fn fetch_vid_name( link: &str ) -> String {
+fn fetch_vid_name( link: &str ) -> Result<String, std::error {
     let youtube_call = Command::new("/usr/bin/youtube-dl")
         .arg("-e")
         .arg(link)
