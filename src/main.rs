@@ -7,7 +7,7 @@ use std::error::Error;
 use utubeget::file::read_urls;
 use utubeget::filter::filter;
 use utubeget::make_dir::create_directory;
-use utubeget::youtube::get_book_name;
+use utubeget::youtube::{get_book_name, fetch_audio};
 
 // TODO
 // Read file with urls
@@ -26,21 +26,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         let newdir: String = String::from("/home/bit/Desktop/test");
         let bookdir = &format!("{}/{}", newdir, latin_name);
         match create_directory(&bookdir) {
-            Ok(result) => println!("Created: {}, result: {:?}", bookdir, result),
+            Ok(result) => { 
+                println!("Created directory: {}", bookdir);
+            },
             Err(error) => match error.kind() {
                 std::io::ErrorKind::AlreadyExists => println!("Directory {} Already Exists!", &bookdir),
                 _ => println!("Error during directory creation: {}", &bookdir),
             },
         }
     });
-
-    // NOTE works
-    //let test = get_book_name(test_link);
-    //println!("{}", test);
-
-    //create_directory("/home/bit/Desktop/tesssst/".to_string());
-
-    //urls.iter().try_for_each(
 
     Ok(())
 }

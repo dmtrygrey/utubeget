@@ -5,14 +5,18 @@ pub fn get_book_name(link: &str) -> String {
     output 
 }
 
-fn fetch_audio( link: &str ) {
-//youtube-dl -f 'bestaudio[ext=m4a]' 'http://youtu.be/hTvJoYnpeRQ'
-    let _youtube_call = Command::new("/usr/bin/youtube-dl")
+pub fn fetch_audio( link: &str ) {
+    let youtube_call = Command::new("/usr/bin/youtube-dl")
         .arg("-f")
         .arg("bestaudio[ext=mp3]")
         .arg(link)
         .output()
-        .unwrap();
+        .expect(&format!("Error: couldn't download {}", &link));
+
+    match youtube_call.status.success() {
+        true => println!("Download successful?"),
+        false => println!("Some error {:?}", &youtube_call.status),
+    }
 }
 
 fn fetch_vid_name( link: &str ) -> String {
@@ -20,10 +24,8 @@ fn fetch_vid_name( link: &str ) -> String {
         .arg("-e")
         .arg(link)
         .output()
-        .unwrap();
+        .expect(&format!("Error: Couldn't get {} video", &link));
 
     let output = String::from_utf8(youtube_call.stdout).unwrap();
     output
 }
-
-
