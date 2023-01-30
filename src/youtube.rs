@@ -31,7 +31,7 @@ pub fn fetch_audio( link: &str ) -> Result<String, String> {
 }
 
 /// Downloads video name from youtube
-fn fetch_vid_name( link: &str ) -> Result<String, std::error {
+fn fetch_vid_name( link: &str ) -> String {
     let youtube_call = Command::new("/usr/bin/youtube-dl")
         .arg("-e")
         .arg(link)
