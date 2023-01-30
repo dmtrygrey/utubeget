@@ -1,8 +1,12 @@
+use thiserror::Error;
 use std::process::Command;
 
+#[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum DownloadError {
+    #[error("Server error")]
     ConnectionError,
+    #[error("Some other error")]
     SomeOtherError,
 }
 
