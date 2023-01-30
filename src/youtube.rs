@@ -5,6 +5,7 @@ pub fn get_book_name(link: &str) -> String {
     output 
 }
 
+/// Downloads audio from youtube
 pub fn fetch_audio( link: &str ) -> Result<String, String> {
     let mut thread = Command::new("/usr/bin/youtube-dl")
         .arg("-f")
@@ -21,6 +22,7 @@ pub fn fetch_audio( link: &str ) -> Result<String, String> {
     }
 }
 
+/// Downloads video name from youtube
 fn fetch_vid_name( link: &str ) -> String {
     let youtube_call = Command::new("/usr/bin/youtube-dl")
         .arg("-e")

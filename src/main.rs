@@ -16,6 +16,11 @@ use utubeget::youtube::{get_book_name, fetch_audio};
 // convert url into latin and create folder with such name with no spaces etc
 // load only audio type quality and convert it to mp3
 // TODO if error, log to file this url
+//
+// Extra TODO:
+// - Handle errors
+// - Create unit tests
+// - Make OOP
 
 fn main() -> Result<(), Box<dyn Error>> {
     let book_urls = read_urls("urls.txt").unwrap();
