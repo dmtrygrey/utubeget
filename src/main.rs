@@ -39,7 +39,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 std::io::ErrorKind::AlreadyExists => {
                     println!("Directory {} Already Exists!", &bookdir);
                     println!("download link: {}", &url);
-                    fetch_audio(&url);
+                    fetch_audio(&bookdir, &url);
                 },
                 _ => println!("Error during directory creation: {}", &bookdir),
             },
