@@ -71,7 +71,8 @@ static CYRILIC_TO_LATIN: phf::Map<&'static str, &'static str> = phf_map! {
     "ї" => "i",
 };
 
-pub fn filter( input: &String ) -> String {
+// TODO ugly code!
+pub fn filter(input: &String) -> String {
     let mut result: String = String::new();
     for ch in input.chars() {
         let mut b = [0; 4];
@@ -97,7 +98,10 @@ fn convert_to_latin(ch: &str) -> Option<&str> {
     output
 }
 
-fn filter_alphanumeric( input: &str ) -> String {
-    let output: String = input.chars().filter(|x| x.is_alphanumeric()).collect::<String>();
+fn filter_alphanumeric(input: &str) -> String {
+    let output: String = input
+        .chars()
+        .filter(|x| x.is_alphanumeric())
+        .collect::<String>();
     output
 }

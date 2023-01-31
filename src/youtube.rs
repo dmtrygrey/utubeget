@@ -1,55 +1,51 @@
-use thiserror::Error;
+use anyhow::{anyhow, Result};
 use std::process::Command;
-
-#[derive(Debug, Error)]
-#[non_exhaustive]
-pub enum DownloadError {
-    #[error("Server error")]
-    ConnectionError,
-    #[error("Some other error")]
-    SomeOtherError,
-}
 
 pub fn get_book_name(link: &str) -> String {
     let output: String = fetch_vid_name(link);
-    output 
+    output
 }
 
 // TODO loop until you get video name or video file
 
 /// Clean youtube-dl cache, good thing to avoid error 403
-pub fn clean_cache() -> Result<String, String> {
-    let cmd = Command::new("youtube-dl")
-        .arg("--rm-cache-dir")
-        .output()
-        .unwrap();
-
-    match cmd.status.success() {
-        true => Ok("Success".to_string()),
-        false => return Err(format!("Youtube-dl error: {:?}", cmd.status)),
-    }
+pub fn clean_cache() -> Result<()> {
+    Command::new("youtube-dl").arg("--rm-cache-dir").output()?;
+    Ok(())
 }
 
 /// Downloads audio from youtube
-pub fn fetch_audio(dir: &str, link: &str) -> Result<String, String> {
+pub fn fetch_audio(retries: u32, dir: &str, link: &str) -> Result<()> {
+    for retry in 0..retries {
+        print!("Download {}, try {}", &link, &retry);
+        download_audio(dir, link)?;
+    }
+    Ok(())
+}
+
+pub fn download_audio(dir: &str, link: &str) -> Result<()> {
     let mut thread = Command::new("/usr/bin/youtube-dl")
-        .arg("-f").arg("bestaudio[ext=m4a]")
+        .arg("-f")
+        .arg("bestaudio[ext=m4a]")
         .arg("-x")
-        .arg("--audio-format").arg("mp3")
+        .arg("--audio-format")
+        .arg("mp3")
         .arg("--write-thumbnail")
-        .arg("--fragment-retries").arg("10")
-        .arg("-R").arg("10")
-        .arg("-o").arg(&format!("{}/%(id)s.%(ext)s", &dir))
+        .arg("--fragment-retries")
+        .arg("10")
+        .arg("-R")
+        .arg("10")
+        .arg("-o")
+        .arg(&format!("{}/%(id)s.%(ext)s", &dir))
         .arg(link)
         .spawn()
         .expect("Error: couldn't create youtube-dl thread");
 
-    let status = thread.wait().unwrap();
-
-    match status.success() {
-        true => Ok("Success".to_string()),
-        false => return Err(format!("Youtube-dl error: {:?}", status)),
+    if let Err(error) = thread.wait() {
+        return Err(anyhow!("Failed to download audio, code: {:?}", error));
     }
+
+    Ok(())
 }
 
 /// Downloads video name from youtube
