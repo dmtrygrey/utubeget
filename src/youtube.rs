@@ -6,8 +6,6 @@ pub fn get_book_name(link: &str) -> String {
     output
 }
 
-// TODO loop until you get video name or video file
-
 /// Clean youtube-dl cache, good thing to avoid error 403
 pub fn clean_cache() -> Result<()> {
     Command::new("youtube-dl").arg("--rm-cache-dir").output()?;
@@ -16,15 +14,19 @@ pub fn clean_cache() -> Result<()> {
 
 /// Downloads audio from youtube
 pub fn fetch_audio(retries: u32, dir: &str, link: &str) -> Result<()> {
-    for retry in 0..retries {
-        print!("Download {}, try {}", &link, &retry);
-        download_audio(dir, link)?;
+    for retry in 1..=retries {
+        println!("[INFO] Download {}, attempt {}", &link, &retry);
+        match download_audio(dir, link) {
+            Ok(_) => break,
+            Err(e) => println!("[DEBUG] {}", e),
+        }
     }
     Ok(())
 }
 
 pub fn download_audio(dir: &str, link: &str) -> Result<()> {
     let mut thread = Command::new("/usr/bin/youtube-dl")
+        .arg("-c")
         .arg("-f")
         .arg("bestaudio[ext=m4a]")
         .arg("-x")
