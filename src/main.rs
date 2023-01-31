@@ -24,6 +24,8 @@ use utubeget::youtube::{clean_cache, fetch_audio, get_book_name};
 // - Make OOP
 // - Give file with urls via command line as argument
 // - Add logging
+// TODO
+// Need more testing for rainy days
 
 fn main() -> Result<(), Box<dyn Error>> {
     let book_urls = read_urls("urls.txt").unwrap();
