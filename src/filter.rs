@@ -58,5 +58,5 @@ mod filter_tests {
         let latin_phrase = filter(cyrilic_phrase);
         println!("Result: {}", &latin_phrase);
         assert_eq!("Eto_testovaya_fraza_na_kirilike", &latin_phrase);
-    } 
+    }
 }

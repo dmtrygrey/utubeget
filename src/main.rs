@@ -1,11 +1,18 @@
 use anyhow::Context;
+use log::{debug, error, info, warn};
 use std::error::Error;
 use utubeget::file::read_urls;
 use utubeget::filter::filter;
 use utubeget::make_dir::create_directory;
 use utubeget::youtube::{clean_cache, fetch_audio, get_book_name};
+use utubeget::logger::Logger;
 
 fn main() -> Result<(), Box<dyn Error>> {
+    Logger::init().unwrap();
+    debug!("This is debug");
+    error!("This is error");
+    info!("This is info");
+    warn!("This is warn");
     let book_urls = read_urls("urls.txt").unwrap();
 
     clean_cache().context("Cleaning youtube-dl cache")?;
@@ -14,7 +21,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         let latin_name: String = filter(&book_name);
         let newdir: String = String::from("/home/bit/Desktop/test");
         let bookdir = &format!("{}/{}", newdir, latin_name);
-        create_directory(&bookdir).context("Creating directory").unwrap();
+        create_directory(&bookdir)
+            .context("Creating directory")
+            .unwrap();
         fetch_audio(10, &bookdir, &url).unwrap();
     });
 
