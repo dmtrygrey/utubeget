@@ -72,7 +72,7 @@ static CYRILIC_TO_LATIN: phf::Map<&'static str, &'static str> = phf_map! {
 };
 
 // TODO ugly code!
-pub fn filter(input: &String) -> String {
+pub fn filter(input: &str) -> String {
     let mut result: String = String::new();
     for ch in input.chars() {
         let mut b = [0; 4];
@@ -104,4 +104,17 @@ fn filter_alphanumeric(input: &str) -> String {
         .filter(|x| x.is_alphanumeric())
         .collect::<String>();
     output
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn filter_test() {
+        let cyrilic_phrase = "Это тестовая фраза на кирилике.";
+        let latin_phrase = filter(cyrilic_phrase);
+        println!("Result: {}", &latin_phrase);
+        assert_eq!("Eto_testovaya_fraza_na_kirilike", &latin_phrase);
+    } 
 }
