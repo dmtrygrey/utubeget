@@ -2,6 +2,7 @@
 /.vscode
 *.code-workspace
 urls.txt
+*.m4a
 *.d
 
 # Compiled Object files
