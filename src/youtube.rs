@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Result};
-use std::process::Command;
+use std::process::{Command};
 
 pub fn get_book_name(link: &str) -> String {
     let output: String = fetch_vid_name(link);
@@ -15,10 +15,13 @@ pub fn clean_cache() -> Result<()> {
 /// Downloads audio from youtube
 pub fn fetch_audio(retries: u32, dir: &str, link: &str) -> Result<()> {
     for retry in 1..=retries {
-        println!("[INFO] Download {}, attempt {}", &link, &retry);
+        log::debug!("Download {}, attempt {}", &link, &retry);
         match download_audio(dir, link) {
-            Ok(_) => break,
-            Err(e) => println!("[DEBUG] {}", e),
+            Ok(_) => {
+                log::debug!("Successfully downloaded {}", &link);
+                break;
+            },
+            Err(e) => log::error!("Error: {}, downloading: {}", e, link),
         }
     }
     Ok(())
@@ -43,11 +46,17 @@ pub fn download_audio(dir: &str, link: &str) -> Result<()> {
         .spawn()
         .expect("Error: couldn't create youtube-dl thread");
 
-    if let Err(error) = thread.wait() {
-        return Err(anyhow!("Failed to download audio, code: {:?}", error));
+    let exit_code = thread.wait().expect("Failed to wait on child process");
+    match exit_code.success() {
+        true => {
+            log::debug!("Youtube-dl exited with success, exit code: {:?}", exit_code);
+            return Ok(())
+        },
+        false => {
+            log::error!("Youtube-dl error happend , exit code {:?}", exit_code);
+            return Err(anyhow!("Failed to download audio, code: {:?}", exit_code));
+        }
     }
-
-    Ok(())
 }
 
 /// Downloads video name from youtube
