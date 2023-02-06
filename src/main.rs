@@ -5,6 +5,7 @@ use utubeget::filter::filter;
 use utubeget::make_dir::create_directory;
 use utubeget::youtube::{clean_cache, fetch_audio, get_book_name};
 
+// TODO add cli arg parser
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::builder()
         .filter_level(log::LevelFilter::Debug)
