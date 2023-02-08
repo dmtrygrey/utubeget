@@ -74,7 +74,7 @@ fn fetch_vid_name(link: &str) -> Result<String> {
                 let output = String::from_utf8(youtube_call.stdout).unwrap();
                 Ok(output)
             },
-            0..=256 => {
+            1..=256 => {
                 let error = String::from(format!("Error during Youtube-dl video name download, code {}", code));
                 log::error!("{}", &error);
                 Err(anyhow!(error))
