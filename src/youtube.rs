@@ -1,8 +1,8 @@
 use anyhow::{anyhow, Result};
-use std::process::{Command};
+use std::{process::Command};
 
 pub fn get_book_name(link: &str) -> String {
-    let output: String = fetch_vid_name(link);
+    let output: String = fetch_vid_name(link).unwrap();
     output
 }
 
@@ -60,13 +60,35 @@ pub fn download_audio(dir: &str, link: &str) -> Result<()> {
 }
 
 /// Downloads video name from youtube
-fn fetch_vid_name(link: &str) -> String {
+fn fetch_vid_name(link: &str) -> Result<String> {
     let youtube_call = Command::new("/usr/bin/youtube-dl")
         .arg("-e")
         .arg(link)
         .output()
         .expect(&format!("Error: Couldn't get {} video", &link));
 
-    let output = String::from_utf8(youtube_call.stdout).unwrap();
-    output
+    match youtube_call.status.code() {
+        Some(code) => match code {
+            0 => {
+                log::debug!("Youtube-dl download video name success");
+                let output = String::from_utf8(youtube_call.stdout).unwrap();
+                Ok(output)
+            },
+            0..=256 => {
+                let error = String::from(format!("Error during Youtube-dl video name download, code {}", code));
+                log::error!("{}", &error);
+                Err(anyhow!(error))
+            },
+            _ => {
+                let error = String::from(format!("Unknown error: {}", code));
+                log::error!("{}", &error);
+                Err(anyhow!(error))
+            },
+        }, 
+        None => {
+            let error = String::from(format!("Error status of shell call"));
+            log::error!("{}", &error);
+            Err(anyhow!(error))
+        },
+    }
 }
