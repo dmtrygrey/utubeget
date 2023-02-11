@@ -12,12 +12,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         .format_target(false)
         .format_timestamp(None)
         .init();
+
     let book_urls = read_urls("urls.txt").unwrap();
 
     clean_cache().context("Cleaning youtube-dl cache")?;
     book_urls.into_iter().for_each(|url| {
-        log::debug!("Try to process {}", url );
-        let book_name: String = get_book_name(&url);
+        log::debug!("Try to process {}", url);
+        let book_name: String = get_book_name(&url).unwrap();
         let latin_name: String = filter(&book_name);
         let newdir: String = String::from("/home/bit/Desktop/test");
         let bookdir = &format!("{}/{}", newdir, latin_name);

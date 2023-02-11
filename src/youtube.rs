@@ -1,9 +1,9 @@
 use anyhow::{anyhow, Result};
-use std::{process::Command};
+use std::process::Command;
 
-pub fn get_book_name(link: &str) -> String {
-    let output: String = fetch_vid_name(link).unwrap();
-    output
+pub fn get_book_name(link: &str) -> Result<String> {
+    let output: String = fetch_vid_name(link)?;
+    Ok(output)
 }
 
 /// Clean youtube-dl cache, good thing to avoid error 403
@@ -14,17 +14,27 @@ pub fn clean_cache() -> Result<()> {
 
 /// Downloads audio from youtube
 pub fn fetch_audio(retries: u32, dir: &str, link: &str) -> Result<()> {
-    for retry in 1..=retries {
-        log::debug!("Download {}, attempt {}", &link, &retry);
+    let mut attemps = 0;
+    while attemps != retries {
+        log::debug!("Download {}, attempt {}", &link, &attemps);
         match download_audio(dir, link) {
             Ok(_) => {
                 log::debug!("Successfully downloaded {}", &link);
                 break;
-            },
+            }
             Err(e) => log::error!("Error: {}, downloading: {}", e, link),
         }
+
+        attemps += 1;
     }
-    Ok(())
+
+    if attemps != retries {
+        let error = String::from(format!("Exhausted number of attemps to download"));
+        log::warn!("{}", &error);
+        Err(anyhow!(error))
+    } else {
+        Ok(())
+    }
 }
 
 pub fn download_audio(dir: &str, link: &str) -> Result<()> {
@@ -50,8 +60,8 @@ pub fn download_audio(dir: &str, link: &str) -> Result<()> {
     match exit_code.success() {
         true => {
             log::debug!("Youtube-dl exited with success, exit code: {:?}", exit_code);
-            return Ok(())
-        },
+            return Ok(());
+        }
         false => {
             log::error!("Youtube-dl error happend , exit code {:?}", exit_code);
             return Err(anyhow!("Failed to download audio, code: {:?}", exit_code));
@@ -73,22 +83,25 @@ fn fetch_vid_name(link: &str) -> Result<String> {
                 log::debug!("Youtube-dl download video name success");
                 let output = String::from_utf8(youtube_call.stdout).unwrap();
                 Ok(output)
-            },
+            }
             1..=256 => {
-                let error = String::from(format!("Error during Youtube-dl video name download, code {}", code));
+                let error = String::from(format!(
+                    "Error during Youtube-dl video name download, code {}",
+                    code
+                ));
                 log::error!("{}", &error);
                 Err(anyhow!(error))
-            },
+            }
             _ => {
                 let error = String::from(format!("Unknown error: {}", code));
                 log::error!("{}", &error);
                 Err(anyhow!(error))
-            },
-        }, 
+            }
+        },
         None => {
             let error = String::from(format!("Error status of shell call"));
             log::error!("{}", &error);
             Err(anyhow!(error))
-        },
+        }
     }
 }
