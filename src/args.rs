@@ -1,8 +1,8 @@
-use std::path::Path;
 use clap::Parser;
 use anyhow::{anyhow, Result};
+use log;
+use crate::make_dir::create_directory;
 
-/// Simple program to greet a person
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
@@ -20,18 +20,43 @@ struct Args {
 }
 
 pub struct CliParseResults {
-    filename: Box<Path>,
-    output_dir: Box<Path>,
-    retry_num: u32,
+    pub filename: String,
+    pub output_dir: String,
+    pub retry_num: u32,
 }
 
-pub fn parse_cli_args() -> Result<()> {
+impl CliParseResults {
+    fn new(filename: &str, output_dir: &str, retry: u32) -> Self {
+        Self {
+            filename: String::from(filename),
+            output_dir: String::from(output_dir),
+            retry_num: retry,
+        }
+    }
+}
+
+pub fn parse_cli_args() -> Result<CliParseResults> {
     let args = Args::parse();
+    let cliargs: CliParseResults = CliParseResults::new(&args.filename, &args.output_dir, args.retries);
 
-    println!("File name: {}", args.filename);
-    println!("Root directory: {:?}", args.output_dir);
-    println!("Number of retries: {}", args.retries);
+    is_exists(&cliargs.filename)?;
+    if let Err(_) = is_exists(&cliargs.output_dir) {
+        create_directory(&cliargs.output_dir)?;
+    };
 
+    log::debug!("Arg: file name: {}", &cliargs.filename);
+    log::debug!("Arg: root directory: {:?}", &cliargs.output_dir);
+    log::debug!("Arg: number of retries: {}", &cliargs.retry_num);
 
-    Ok(())
+    Ok(cliargs)
+}
+
+fn is_exists(path: &str) -> Result<()> {
+    if !std::path::Path::new(&path).exists() {
+        let warn = String::from(format!("File/Path doesn't exist: {}", &path));
+        log::warn!("{}", &warn);
+        Err(anyhow!(warn))
+    } else {
+        Ok(())
+    }
 }

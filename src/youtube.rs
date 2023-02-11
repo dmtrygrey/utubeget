@@ -16,13 +16,13 @@ pub fn clean_cache() -> Result<()> {
 pub fn fetch_audio(retries: u32, dir: &str, link: &str) -> Result<()> {
     let mut attemps = 0;
     while attemps != retries {
-        log::debug!("Download {}, attempt {}", &link, &attemps);
+        log::debug!("Download {}, attempt {}, left: {}", &link, &attemps, &retries-&attemps);
         match download_audio(dir, link) {
             Ok(_) => {
                 log::debug!("Successfully downloaded {}", &link);
                 break;
             }
-            Err(e) => log::error!("Error: {}, downloading: {}", e, link),
+            Err(e) => log::error!("{}, downloading: {}", e, link),
         }
         attemps += 1;
     }
@@ -37,6 +37,7 @@ pub fn fetch_audio(retries: u32, dir: &str, link: &str) -> Result<()> {
 }
 
 pub fn download_audio(dir: &str, link: &str) -> Result<()> {
+    log::debug!("Donwloading: {}", &link);
     let mut thread = Command::new("/usr/bin/youtube-dl")
         .arg("-c")
         .arg("-f")
@@ -57,7 +58,7 @@ pub fn download_audio(dir: &str, link: &str) -> Result<()> {
             return Ok(());
         }
         false => {
-            log::error!("Youtube-dl error happend , exit code {:?}", exit_code);
+            log::warn!("Youtube-dl issue happend, exit code {:?}", exit_code.code().unwrap());
             return Err(anyhow!("Failed to download audio, code: {:?}", exit_code));
         }
     }
@@ -65,11 +66,12 @@ pub fn download_audio(dir: &str, link: &str) -> Result<()> {
 
 /// Downloads video name from youtube
 fn fetch_vid_name(link: &str) -> Result<String> {
+    log::debug!("Getting video name from: {}", &link);
     let youtube_call = Command::new("/usr/bin/youtube-dl")
         .arg("-e")
         .arg(link)
         .output()
-        .expect(&format!("Error: Couldn't get {} video", &link));
+        .expect("Error: run youtube-dl process");
 
     match youtube_call.status.code() {
         Some(code) => match code {

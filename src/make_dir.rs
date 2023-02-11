@@ -1,17 +1,20 @@
 use anyhow::{bail, Result};
+use log;
 
 pub fn create_directory(name: &str) -> Result<()> {
+    log::info!("Creating directory: {}", &name);
     match std::fs::create_dir(name) {
         Ok(_) => Ok(()),
         Err(error) => match error.kind() {
             std::io::ErrorKind::AlreadyExists => {
-                println!("Directory {} Already Exists!", &name);
+                log::debug!("Directory {} already axists", &name);
                 Ok(())
-            }
+            },
             _ => {
-                println!("Error during directory creation: {}", &name);
-                bail!("")
-            }
+                let error = String::from(format!("Error during directory creation: {}", &name));
+                log::error!("{}", &error);
+                bail!(error);
+            },
         },
     }
 }
