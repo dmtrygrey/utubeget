@@ -29,7 +29,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         create_directory(&bookdir)
             .context("Creating directory")
             .unwrap();
-        fetch_audio(cli_args.retry_num, &cli_args.output_dir, &url).unwrap();
+        fetch_audio(cli_args.retry_num, &bookdir, &url).unwrap();
     });
 
     Ok(())
