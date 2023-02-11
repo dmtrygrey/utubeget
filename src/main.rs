@@ -6,6 +6,9 @@ use utubeget::make_dir::create_directory;
 use utubeget::youtube::{clean_cache, fetch_audio, get_book_name};
 use utubeget::args;
 
+// TODO:
+// Add quiet option for youtube-dl
+// Add option for enabling debug level, otherwise lnfo by default
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::builder()
         .filter_level(log::LevelFilter::Debug)
@@ -22,12 +25,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         log::debug!("Try to process {}", &url);
         let book_name: String = get_book_name(&url).unwrap();
         let latin_name: String = filter(&book_name);
-        let newdir: String = String::from("/home/bit/Desktop/test");
-        let bookdir = &format!("{}/{}", newdir, latin_name);
+        let bookdir = &format!("{}/{}", &cli_args.output_dir, latin_name);
         create_directory(&bookdir)
             .context("Creating directory")
             .unwrap();
-        fetch_audio(10, &bookdir, &url).unwrap();
+        fetch_audio(cli_args.retry_num, &cli_args.output_dir, &url).unwrap();
     });
 
     Ok(())

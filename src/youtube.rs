@@ -1,5 +1,6 @@
 use anyhow::{anyhow, Result};
 use std::process::Command;
+use std::{thread, time};
 
 pub fn get_book_name(link: &str) -> Result<String> {
     let output: String = fetch_vid_name(link)?;
@@ -22,12 +23,15 @@ pub fn fetch_audio(retries: u32, dir: &str, link: &str) -> Result<()> {
                 log::debug!("Successfully downloaded {}", &link);
                 break;
             }
-            Err(e) => log::error!("{}, downloading: {}", e, link),
+            Err(e) => {
+                log::warn!("{}, while downloading: {}, go to sleep 2 sec", e, link);
+                thread::sleep(time::Duration::from_secs(2));
+            },
         }
         attemps += 1;
     }
 
-    if attemps != retries {
+    if attemps == retries {
         let error = String::from(format!("Exhausted number of attemps to download"));
         log::warn!("{}", &error);
         Err(anyhow!(error))
@@ -53,14 +57,8 @@ pub fn download_audio(dir: &str, link: &str) -> Result<()> {
 
     let exit_code = thread.wait().expect("Failed to wait on child process");
     match exit_code.success() {
-        true => {
-            log::debug!("Youtube-dl exited with success, exit code: {:?}", exit_code);
-            return Ok(());
-        }
-        false => {
-            log::warn!("Youtube-dl issue happend, exit code {:?}", exit_code.code().unwrap());
-            return Err(anyhow!("Failed to download audio, code: {:?}", exit_code));
-        }
+        true => Ok(()),
+        false => Err(anyhow!("Youtube-dl issue happend, exit code {:?}", exit_code.code().unwrap())),
     }
 }
 
