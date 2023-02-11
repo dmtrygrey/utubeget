@@ -4,9 +4,11 @@ use utubeget::file::read_urls;
 use utubeget::filter::filter;
 use utubeget::make_dir::create_directory;
 use utubeget::youtube::{clean_cache, fetch_audio, get_book_name};
+use utubeget::args;
 
-// TODO add cli arg parser
 fn main() -> Result<(), Box<dyn Error>> {
+    let cli_args = args::parse_cli_args().unwrap();
+
     env_logger::builder()
         .filter_level(log::LevelFilter::Debug)
         .format_target(false)

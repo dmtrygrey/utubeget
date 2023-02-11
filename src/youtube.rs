@@ -24,7 +24,6 @@ pub fn fetch_audio(retries: u32, dir: &str, link: &str) -> Result<()> {
             }
             Err(e) => log::error!("Error: {}, downloading: {}", e, link),
         }
-
         attemps += 1;
     }
 
@@ -42,16 +41,11 @@ pub fn download_audio(dir: &str, link: &str) -> Result<()> {
         .arg("-c")
         .arg("-f")
         .arg("bestaudio[ext=m4a]")
-        .arg("-x")
-        .arg("--audio-format")
-        .arg("mp3")
+        .arg("-x").arg("--audio-format").arg("mp3")
         .arg("--write-thumbnail")
-        .arg("--fragment-retries")
-        .arg("10")
-        .arg("-R")
-        .arg("10")
-        .arg("-o")
-        .arg(&format!("{}/%(id)s.%(ext)s", &dir))
+        .arg("--fragment-retries").arg("10")
+        .arg("-R").arg("10")
+        .arg("-o").arg(&format!("{}/%(id)s.%(ext)s", &dir))
         .arg(link)
         .spawn()
         .expect("Error: couldn't create youtube-dl thread");
