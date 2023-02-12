@@ -17,32 +17,58 @@ struct Args {
     /* Number of retries to download one file */
     #[arg(short, long, default_value_t=5)]
     retries: u32,
+
+    /* Disable yt-dlp output */
+    #[arg(short, long)]
+    quiet: bool,
 }
 
+#[derive(Default)]
 pub struct CliParseResults {
     pub filename: String,
     pub output_dir: String,
     pub retry_num: u32,
+    pub quiet: bool,
 }
 
+#[deny(unused_must_use)]
 impl CliParseResults {
-    fn new(filename: &str, output_dir: &str, retry: u32) -> Self {
+    fn new() -> Self {
         Self {
-            filename: String::from(filename),
-            output_dir: String::from(output_dir),
-            retry_num: retry,
-        }
+            ..Default::default()
+        } 
+    } 
+    fn retries(mut self, number: u32) -> Self {
+        self.retry_num = number;
+        self
+    }
+    fn output_dir(mut self, output_dir: &str) -> Self {
+        self.output_dir = output_dir.to_string();
+        self
+    }
+    fn filename(mut self, filename: &str) -> Self {
+        self.filename = filename.to_string();
+        self
+    }
+    fn quiet(mut self, flag: bool) -> Self {
+        self.quiet = flag;
+        self
     }
 }
 
 pub fn parse_cli_args() -> Result<CliParseResults> {
     let args = Args::parse();
-    let cliargs: CliParseResults = CliParseResults::new(&args.filename, &args.output_dir, args.retries);
+
+    let cliargs = CliParseResults::new()
+        .filename(&args.filename)
+        .output_dir(&args.output_dir)
+        .quiet(args.quiet)
+        .retries(args.retries);
 
     is_exists(&cliargs.filename)?;
     if let Err(_) = is_exists(&cliargs.output_dir) {
         create_directory(&cliargs.output_dir)?;
-    };
+    }
 
     log::debug!("Arg: file name: {}", &cliargs.filename);
     log::debug!("Arg: root directory: {:?}", &cliargs.output_dir);

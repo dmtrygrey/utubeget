@@ -7,7 +7,7 @@ use utubeget::youtube::{clean_cache, fetch_audio, get_book_name};
 use utubeget::args;
 
 // TODO:
-// Add quiet option for youtube-dl
+// Add quiet option for yt-dlp
 // Add option for enabling debug level, otherwise lnfo by default
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::builder()
@@ -20,7 +20,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let book_urls = read_urls(&cli_args.filename).unwrap();
 
-    clean_cache().context("Cleaning youtube-dl cache")?;
+    clean_cache().context("Cleaning yt-dlp cache")?;
     book_urls.into_iter().for_each(|url| {
         log::debug!("Try to process {}", &url);
         let book_name: String = get_book_name(&url).unwrap();

@@ -7,9 +7,9 @@ pub fn get_book_name(link: &str) -> Result<String> {
     Ok(output)
 }
 
-/// Clean youtube-dl cache, good thing to avoid error 403
+/// Clean yt-dlp cache, good thing to avoid error 403
 pub fn clean_cache() -> Result<()> {
-    Command::new("youtube-dl").arg("--rm-cache-dir").output()?;
+    Command::new("yt-dlp").arg("--rm-cache-dir").output()?;
     Ok(())
 }
 
@@ -22,7 +22,7 @@ pub fn fetch_audio(retries: u32, dir: &str, link: &str) -> Result<()> {
             Ok(_) => {
                 log::debug!("Successfully downloaded {}", &link);
                 break;
-            }
+            },
             Err(e) => {
                 log::warn!("{}, while downloading: {}, go to sleep 2 sec", e, link);
                 thread::sleep(time::Duration::from_secs(2));
@@ -42,8 +42,9 @@ pub fn fetch_audio(retries: u32, dir: &str, link: &str) -> Result<()> {
 
 pub fn download_audio(dir: &str, link: &str) -> Result<()> {
     log::debug!("Donwloading: {}", &link);
-    let mut thread = Command::new("/usr/bin/youtube-dl")
+    let mut thread = Command::new("/usr/bin/yt-dlp")
         .arg("-c")
+        .arg("-q").arg("--progress")
         .arg("-f")
         .arg("bestaudio[ext=m4a]")
         .arg("-x").arg("--audio-format").arg("mp3")
@@ -53,34 +54,34 @@ pub fn download_audio(dir: &str, link: &str) -> Result<()> {
         .arg("-o").arg(&format!("{}/%(id)s.%(ext)s", &dir))
         .arg(link)
         .spawn()
-        .expect("Error: couldn't create youtube-dl thread");
+        .expect("Error: couldn't create yt-dlp thread");
 
     let exit_code = thread.wait().expect("Failed to wait on child process");
     match exit_code.success() {
         true => Ok(()),
-        false => Err(anyhow!("Youtube-dl issue happend, exit code {:?}", exit_code.code().unwrap())),
+        false => Err(anyhow!("yt-dlp issue happend, exit code {:?}", exit_code.code().unwrap())),
     }
 }
 
 /// Downloads video name from youtube
 fn fetch_vid_name(link: &str) -> Result<String> {
     log::debug!("Getting video name from: {}", &link);
-    let youtube_call = Command::new("/usr/bin/youtube-dl")
+    let youtube_call = Command::new("/usr/bin/yt-dlp")
         .arg("-e")
         .arg(link)
         .output()
-        .expect("Error: run youtube-dl process");
+        .expect("Error: run yt-dlp process");
 
     match youtube_call.status.code() {
         Some(code) => match code {
             0 => {
-                log::debug!("Youtube-dl download video name success");
+                log::debug!("yt-dlp download video name success");
                 let output = String::from_utf8(youtube_call.stdout).unwrap();
                 Ok(output)
             }
             1..=256 => {
                 let error = String::from(format!(
-                    "Error during Youtube-dl video name download, code {}",
+                    "Error during yt-dlp video name download, code {}",
                     code
                 ));
                 log::error!("{}", &error);
