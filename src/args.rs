@@ -17,10 +17,6 @@ struct Args {
     /* Number of retries to download one file */
     #[arg(short, long, default_value_t=5)]
     retries: u32,
-
-    /* Disable yt-dlp output */
-    #[arg(short, long)]
-    quiet: bool,
 }
 
 #[derive(Default)]
@@ -28,7 +24,6 @@ pub struct CliParseResults {
     pub filename: String,
     pub output_dir: String,
     pub retry_num: u32,
-    pub quiet: bool,
 }
 
 #[deny(unused_must_use)]
@@ -50,10 +45,6 @@ impl CliParseResults {
         self.filename = filename.to_string();
         self
     }
-    fn quiet(mut self, flag: bool) -> Self {
-        self.quiet = flag;
-        self
-    }
 }
 
 pub fn parse_cli_args() -> Result<CliParseResults> {
@@ -62,7 +53,6 @@ pub fn parse_cli_args() -> Result<CliParseResults> {
     let cliargs = CliParseResults::new()
         .filename(&args.filename)
         .output_dir(&args.output_dir)
-        .quiet(args.quiet)
         .retries(args.retries);
 
     fs::is_exists(&cliargs.filename)?;
