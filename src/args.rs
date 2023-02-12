@@ -1,7 +1,7 @@
 use clap::Parser;
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use log;
-use crate::make_dir::create_directory;
+use crate::fs;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -65,9 +65,9 @@ pub fn parse_cli_args() -> Result<CliParseResults> {
         .quiet(args.quiet)
         .retries(args.retries);
 
-    is_exists(&cliargs.filename)?;
-    if let Err(_) = is_exists(&cliargs.output_dir) {
-        create_directory(&cliargs.output_dir)?;
+    fs::is_exists(&cliargs.filename)?;
+    if let Err(_) = fs::is_exists(&cliargs.output_dir) {
+        fs::create_directory(&cliargs.output_dir)?;
     }
 
     log::debug!("Arg: file name: {}", &cliargs.filename);
@@ -75,14 +75,4 @@ pub fn parse_cli_args() -> Result<CliParseResults> {
     log::debug!("Arg: number of retries: {}", &cliargs.retry_num);
 
     Ok(cliargs)
-}
-
-fn is_exists(path: &str) -> Result<()> {
-    if !std::path::Path::new(&path).exists() {
-        let warn = String::from(format!("File/Path doesn't exist: {}", &path));
-        log::warn!("{}", &warn);
-        Err(anyhow!(warn))
-    } else {
-        Ok(())
-    }
 }
