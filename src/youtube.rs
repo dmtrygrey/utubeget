@@ -7,12 +7,6 @@ pub fn get_book_name(link: &str) -> Result<String> {
     Ok(output)
 }
 
-/// Clean yt-dlp cache, good thing to avoid error 403
-pub fn clean_cache() -> Result<()> {
-    Command::new("yt-dlp").arg("--rm-cache-dir").output()?;
-    Ok(())
-}
-
 /// Downloads audio from youtube
 pub fn fetch_audio(retries: u32, dir: &str, link: &str) -> Result<()> {
     let mut attemps = 0;
