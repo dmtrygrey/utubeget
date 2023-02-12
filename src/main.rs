@@ -4,8 +4,6 @@ use utubeget::filter::filter;
 use utubeget::youtube::{fetch_audio, get_book_name};
 use utubeget::args;
 
-// TODO:
-// Create file system module. To create dirs there and check if something exists etc..
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::builder()
         .format_target(false)
