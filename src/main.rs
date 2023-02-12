@@ -9,6 +9,8 @@ use utubeget::args;
 // TODO:
 // Add quiet option for yt-dlp
 // Add option for enabling debug level, otherwise lnfo by default
+// Create file system module. To create dirs there and check if something exists etc..
+// Make youtube object or tuple. With link and folder name in latin. Might help with debugging?
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::builder()
         .filter_level(log::LevelFilter::Debug)
