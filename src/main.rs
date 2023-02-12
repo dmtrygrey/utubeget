@@ -18,7 +18,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         log::debug!("Try to process {}", &url);
         let book_name: String = get_book_name(&url).unwrap();
         let latin_name: String = filter(&book_name);
-        let bookdir = &format!("{}/{}", &cli_args.output_dir, latin_name);
+        let bookdir = format!("{}/{}", &cli_args.output_dir, latin_name);
         create_directory(&bookdir).unwrap();
         fetch_audio(cli_args.retry_num, &bookdir, &url).unwrap();
     });
