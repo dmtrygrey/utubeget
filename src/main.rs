@@ -12,7 +12,6 @@ use utubeget::args;
 // Make youtube object or tuple. With link and folder name in latin. Might help with debugging?
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::builder()
-        .filter_level(log::LevelFilter::Debug)
         .format_target(false)
         .format_timestamp(None)
         .init();
