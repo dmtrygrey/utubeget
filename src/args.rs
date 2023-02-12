@@ -4,7 +4,6 @@ use log;
 use crate::fs;
 
 #[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
 struct Args {
     /* File name with list of youtube urls */
     #[arg(short, long)]
