@@ -1,6 +1,6 @@
-use clap::Parser;
-use anyhow::Result;
 use crate::fs;
+use anyhow::Result;
+use clap::Parser;
 
 #[derive(Parser, Debug)]
 struct Args {
@@ -13,7 +13,7 @@ struct Args {
     output_dir: String,
 
     /* Number of retries to download one file */
-    #[arg(short, long, default_value_t=5)]
+    #[arg(short, long, default_value_t = 5)]
     retries: u32,
 }
 
@@ -29,8 +29,8 @@ impl CliParseResults {
     fn build() -> Self {
         Self {
             ..Default::default()
-        } 
-    } 
+        }
+    }
     fn retries(mut self, number: u32) -> Self {
         self.retry_num = number;
         self

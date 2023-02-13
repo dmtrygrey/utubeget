@@ -1,8 +1,8 @@
-use std::process::Command;
-use std::fs::File;
-use std::io::Read;
 use anyhow::{anyhow, bail, Result};
 use log;
+use std::fs::File;
+use std::io::Read;
+use std::process::Command;
 
 pub fn create_directory(name: &str) -> Result<()> {
     log::info!("Creating directory: {}", &name);
@@ -12,12 +12,12 @@ pub fn create_directory(name: &str) -> Result<()> {
             std::io::ErrorKind::AlreadyExists => {
                 log::debug!("Directory {} already axists", &name);
                 Ok(())
-            },
+            }
             _ => {
                 let error = String::from(format!("Error during directory creation: {}", &name));
                 log::error!("{}", &error);
                 bail!(error);
-            },
+            }
         },
     }
 }
@@ -48,17 +48,22 @@ pub fn find_youtube_downloader() -> Option<String> {
         .arg("yt-dlp")
         .output()
         .expect("Error: whereis call failed");
-    
+
     match whereis.status.success() {
         true => {
-            let output = String::from_utf8(whereis.stdout).unwrap();
+            let output = String::from_utf8(whereis.stdout)
+                .unwrap()
+                .trim()
+                .to_string();
             log::debug!("yt-dlp location is: {}", &output);
             Some(output)
-        },
+        }
         false => {
-            log::error!("yt-dlp wasn't found in file system, you can install it with: $ pip install yt-dlp");
+            log::error!(
+                "yt-dlp wasn't found in file system, you can install it with: $ pip install yt-dlp"
+            );
             None
-        },
+        }
     }
 }
 
@@ -66,11 +71,11 @@ pub fn find_youtube_downloader() -> Option<String> {
 mod tests {
     use super::*;
     use anyhow::Ok;
-    use rand::{thread_rng, Rng};
     use rand::distributions::Alphanumeric;
+    use rand::{thread_rng, Rng};
 
     #[test]
-    fn test_whereis() {
+    fn test_download_tool_search() {
         match find_youtube_downloader() {
             Some(output) => assert!(output.contains("yt-dlp")),
             None => assert!(false, "Couldn't find yt-dlp"),
