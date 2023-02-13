@@ -85,8 +85,13 @@ mod tests {
             .map(char::from)
             .collect();
         let dir_name: String = format!("/tmp/test{}", rand_dir);
-        create_directory(&dir_name).unwrap();
-        assert_eq!(is_exists(&dir_name).unwrap(), ());
+        assert!(create_directory(&dir_name).is_ok());
+        assert!(is_exists(&dir_name).is_ok());
         Ok(())
+    }
+
+    #[test]
+    fn test_reading_file_with_urls() {
+        assert!(read_urls("urls.txt").is_some());
     }
 }
