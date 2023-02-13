@@ -2,6 +2,44 @@ use anyhow::{anyhow, Result};
 use std::process::Command;
 use std::{thread, time};
 
+#[derive(Default)]
+pub struct YoutubeDownloader {
+    tool: String,
+    link: String,
+    retries: u32,
+}
+
+impl YoutubeDownloader {
+    pub fn build() -> Self {
+        Self {
+            ..Default::default()
+        }
+    }
+    pub fn tool(mut self, tool: &str) -> Self {
+        self.tool = tool.to_string();
+        self
+    }
+    pub fn link(mut self, link: &str) -> Self {
+        self.link = link.to_string();
+        self
+    }
+    pub fn retries(mut self, retries: u32) -> Self {
+        self.retries = retries;
+        self
+    }
+
+}
+
+trait Fetch {
+    fn video_name(&self, link: &str) -> Result<String>;
+}
+
+impl Fetch for YoutubeDownloader {
+    fn video_name(&self, link: &str) -> Result<String> {
+        unimplemented!();
+    }
+}
+
 pub fn get_book_name(link: &str) -> Result<String> {
     let output: String = fetch_vid_name(link)?;
     Ok(output)

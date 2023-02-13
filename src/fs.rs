@@ -1,3 +1,4 @@
+use std::process::{Command, Output};
 use std::fs::File;
 use std::io::Read;
 use anyhow::{anyhow, bail, Result};
@@ -40,4 +41,34 @@ pub fn read_urls(filename: &str) -> Option<Vec<String>> {
         lines.push(line.to_string());
     }
     Some(lines)
+}
+
+pub fn find_youtube_downloader() -> Option<String> {
+    let whereis = Command::new("/usr/bin/whereis")
+        .arg("yt-dlp")
+        .output()
+        .expect("Error: whereis call failed");
+    
+    match whereis.status.success() {
+        true => {
+            let output = String::from_utf8(whereis.stdout).unwrap();
+            log::debug!("yt-dlp location is: {}", &output);
+            Some(output)
+        },
+        false => {
+            log::error!("yt-dlp wasn't found in file system, you can install it with: $ pip install yt-dlp");
+            None
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_whereis_tool() {
+        let output = find_youtube_downloader().unwrap();
+        println!("{}", output);
+    }
 }

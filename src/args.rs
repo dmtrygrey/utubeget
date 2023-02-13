@@ -1,6 +1,5 @@
 use clap::Parser;
 use anyhow::Result;
-use log;
 use crate::fs;
 
 #[derive(Parser, Debug)]
@@ -27,7 +26,7 @@ pub struct CliParseResults {
 
 #[deny(unused_must_use)]
 impl CliParseResults {
-    fn new() -> Self {
+    fn build() -> Self {
         Self {
             ..Default::default()
         } 
@@ -49,7 +48,7 @@ impl CliParseResults {
 pub fn parse_cli_args() -> Result<CliParseResults> {
     let args = Args::parse();
 
-    let cliargs = CliParseResults::new()
+    let cliargs = CliParseResults::build()
         .filename(&args.filename)
         .output_dir(&args.output_dir)
         .retries(args.retries);
