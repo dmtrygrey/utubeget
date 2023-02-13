@@ -1,4 +1,4 @@
-use std::process::{Command, Output};
+use std::process::Command;
 use std::fs::File;
 use std::io::Read;
 use anyhow::{anyhow, bail, Result};
@@ -44,7 +44,7 @@ pub fn read_urls(filename: &str) -> Option<Vec<String>> {
 }
 
 pub fn find_youtube_downloader() -> Option<String> {
-    let whereis = Command::new("/usr/bin/whereis")
+    let whereis = Command::new("which")
         .arg("yt-dlp")
         .output()
         .expect("Error: whereis call failed");
@@ -58,17 +58,35 @@ pub fn find_youtube_downloader() -> Option<String> {
         false => {
             log::error!("yt-dlp wasn't found in file system, you can install it with: $ pip install yt-dlp");
             None
-        }
+        },
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use anyhow::Ok;
+    use rand::{thread_rng, Rng};
+    use rand::distributions::Alphanumeric;
 
     #[test]
-    fn test_whereis_tool() {
-        let output = find_youtube_downloader().unwrap();
-        println!("{}", output);
+    fn test_whereis() {
+        match find_youtube_downloader() {
+            Some(output) => assert!(output.contains("yt-dlp")),
+            None => assert!(false, "Couldn't find yt-dlp"),
+        }
+    }
+
+    #[test]
+    fn test_dir_creating() -> Result<()> {
+        let rand_dir: String = thread_rng()
+            .sample_iter(&Alphanumeric)
+            .take(5)
+            .map(char::from)
+            .collect();
+        let dir_name: String = format!("/tmp/test{}", rand_dir);
+        create_directory(&dir_name).unwrap();
+        assert_eq!(is_exists(&dir_name).unwrap(), ());
+        Ok(())
     }
 }
