@@ -45,8 +45,8 @@ impl YoutubeDownloader {
                 },
                 1..=256 => {
                     let error = String::from(format!(
-                        "Error during yt-dlp video name download, code {}",
-                        code
+                        "Error during yt-dlp video name download, code {}. Don't forget to update {}!",
+                        code, &self.tool
                     ));
                     log::error!("{}", &error);
                     Err(anyhow!(error))
