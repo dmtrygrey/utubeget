@@ -5,7 +5,6 @@ use std::{thread, time};
 
 #[derive(Default)]
 pub struct YoutubeDownloader {
-    //tool: String,
     tool: String,
     link: String,
     download_location: String,
@@ -43,7 +42,7 @@ impl YoutubeDownloader {
                     log::debug!("yt-dlp download video name success");
                     let output = String::from_utf8(youtube_call.stdout).unwrap();
                     Ok(output)
-                }
+                },
                 1..=256 => {
                     let error = String::from(format!(
                         "Error during yt-dlp video name download, code {}",
@@ -51,12 +50,12 @@ impl YoutubeDownloader {
                     ));
                     log::error!("{}", &error);
                     Err(anyhow!(error))
-                }
+                },
                 _ => {
                     let error = String::from(format!("Unknown error: {}", code));
                     log::error!("{}", &error);
                     Err(anyhow!(error))
-                }
+                },
             },
             None => {
                 let error = String::from(format!("Error status of shell call"));
@@ -102,7 +101,6 @@ impl YoutubeDownloader {
 
     fn try_download_audio(&self) -> Result<()> {
         log::debug!("Donwloading: {}", &self.link);
-        //let mut thread = Command::new("/usr/bin/yt-dlp")
         let mut thread = Command::new(&self.tool)
             .arg("-c")
             .arg("-q")
